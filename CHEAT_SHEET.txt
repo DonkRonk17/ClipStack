@@ -1,0 +1,325 @@
+================================================================================
+CLIPSTACK CHEAT SHEET v1.0
+Clipboard History Manager for Power Users
+================================================================================
+
+QUICK START
+-----------
+1. Run: python clipstack.py list
+2. Copy something to clipboard
+3. Run: python clipstack.py capture
+4. Run: python clipstack.py list
+
+Done! Your clipboard history is now being managed.
+
+================================================================================
+COMMON COMMANDS
+--------------------------------------------------------------------------------
+
+List Entries:
+  clipstack list                    # Show last 10 entries (default)
+  clipstack list --last 20          # Show last 20 entries
+  clipstack ls -n 20                # Shorthand
+
+Get Entry:
+  clipstack get 1                   # Get most recent entry (full details)
+  clipstack get 3                   # Get 3rd most recent entry
+  clipstack get 3 --quiet           # Get content only (no metadata)
+  clipstack g 2 -q                  # Shorthand
+
+Copy Entry Back to Clipboard:
+  clipstack copy 1                  # Copy most recent to clipboard
+  clipstack copy 5                  # Copy 5th entry to clipboard
+  clipstack c 3                     # Shorthand
+
+Search:
+  clipstack search "function"       # Simple keyword search
+  clipstack search "def \w+\("      # Regex search
+  clipstack search "error" -n 5     # Limit to 5 results
+  clipstack s "TODO"                # Shorthand
+
+Add Entry Manually:
+  clipstack add "text to add"       # Add text to history
+  clipstack add API_KEY=abc123      # Multi-word without quotes
+  clipstack a "remember this"       # Shorthand
+
+Capture Current Clipboard:
+  clipstack capture                 # One-time capture from clipboard
+  clipstack cap                     # Shorthand
+
+================================================================================
+MANAGEMENT COMMANDS
+--------------------------------------------------------------------------------
+
+Pin/Unpin (protect from deletion):
+  clipstack pin 1                   # Pin entry #1
+  clipstack unpin 1                 # Remove pin from entry #1
+
+Delete:
+  clipstack delete 5                # Delete entry #5
+  clipstack del 3                   # Shorthand
+  clipstack rm 2                    # Shorthand
+
+Clear History:
+  clipstack clear                   # Preview (no action)
+  clipstack clear --force           # Clear all (keeps pinned)
+  clipstack clear --force --all     # Clear everything (incl. pinned)
+  clipstack clear -f -k             # Force, keep pinned (default)
+
+================================================================================
+WATCH MODE (Auto-Capture)
+--------------------------------------------------------------------------------
+
+  clipstack watch                   # Start watching clipboard
+                                    # Press Ctrl+C to stop
+
+Watch mode monitors clipboard changes every 0.5 seconds and automatically
+captures any new content. Perfect for work sessions.
+
+================================================================================
+STATISTICS & INFO
+--------------------------------------------------------------------------------
+
+  clipstack stats                   # Show clipboard statistics
+  clipstack --version               # Show version
+  clipstack --help                  # Show help
+
+Example stats output:
+  Total entries:    47
+  Pinned entries:   3
+  Total characters: 12,456
+  Total words:      2,134
+  Database size:    48.2 KB
+
+================================================================================
+EXPORT & IMPORT (Backup/Restore)
+--------------------------------------------------------------------------------
+
+Export:
+  clipstack export                  # Print JSON to stdout
+  clipstack export -o backup.json   # Save to file
+  clipstack export -f txt -o b.txt  # Plain text format
+
+Import:
+  clipstack import backup.json      # Import from JSON file
+
+================================================================================
+CLI FLAGS & OPTIONS
+--------------------------------------------------------------------------------
+
+Global Options:
+  -h, --help                        Show help message
+  -V, --version                     Show version
+  --db PATH                         Use custom database path
+
+Command-Specific:
+
+  list:
+    --last, -n NUM                  Number of entries (default: 10)
+
+  get:
+    --quiet, -q                     Output content only (no metadata)
+
+  search:
+    --limit, -n NUM                 Max results (default: 20)
+
+  clear:
+    --force, -f                     Actually delete (required)
+    --keep-pinned, -k               Keep pinned entries (default)
+    --all                           Delete pinned too
+
+  export:
+    --output, -o FILE               Output file path
+    --format, -f FORMAT             json (default) or txt
+
+================================================================================
+PYTHON API
+--------------------------------------------------------------------------------
+
+Import:
+  from clipstack import ClipStack
+
+Initialize:
+  cs = ClipStack()
+  cs = ClipStack(db_path=Path('/custom/path.db'))
+
+Basic Usage:
+  cs.add("text")                    # Add entry
+  cs.capture()                      # Capture current clipboard
+  content = cs.get(1)               # Get content by position
+  entry = cs.get_entry(1)           # Get full entry dict
+  entries = cs.list(limit=10)       # List recent entries
+  cs.copy(3)                        # Copy entry to clipboard
+
+Search & Management:
+  results = cs.search("query")      # Search history
+  cs.delete(5)                      # Delete by position
+  cs.clear(keep_pinned=True)        # Clear history
+  cs.pin(1)                         # Pin entry
+  cs.unpin(1)                       # Unpin entry
+
+Export/Import:
+  json_data = cs.export('json')     # Export as JSON string
+  cs.import_history(data, 'json')   # Import from JSON string
+
+Statistics:
+  stats = cs.stats()                # Get stats dict
+  # stats['total_entries'], stats['pinned_entries'], etc.
+
+Cleanup:
+  cs.close()                        # Close database connection
+
+================================================================================
+ENTRY POSITIONS
+--------------------------------------------------------------------------------
+
+Position numbers are 1-indexed, with 1 being the MOST RECENT:
+
+  Position 1  = Most recently copied/added
+  Position 2  = Second most recent
+  Position 3  = Third most recent
+  ...
+  Position N  = Oldest in the list shown
+
+Example:
+  clipstack get 1    # Gets your most recent copy
+  clipstack get 5    # Gets your 5th most recent copy
+  clipstack copy 1   # Copies most recent back to clipboard
+
+================================================================================
+PINNED ENTRIES
+--------------------------------------------------------------------------------
+
+Pinned entries:
+- Show [*] marker in list output
+- Are NOT deleted when clearing history (unless --all)
+- Are NOT pruned when history limit is reached
+- Use for: API keys, important notes, frequently used snippets
+
+  clipstack pin 3      # Pin entry #3
+  clipstack unpin 3    # Unpin entry #3
+  clipstack clear -f   # Clears all EXCEPT pinned
+
+================================================================================
+SEARCH TIPS
+--------------------------------------------------------------------------------
+
+Simple Searches:
+  clipstack search "error"          # Find entries containing "error"
+  clipstack search "API key"        # Find entries with "API key"
+
+Case Insensitive:
+  All searches are case-insensitive by default
+  "ERROR", "error", "Error" all match
+
+Regex Patterns:
+  clipstack search "def \w+\("      # Python function definitions
+  clipstack search "https?://"      # URLs (http or https)
+  clipstack search "\berror\b"      # Whole word "error" only
+  clipstack search "line \d+"       # "line" followed by numbers
+
+================================================================================
+DATABASE LOCATION
+--------------------------------------------------------------------------------
+
+Default locations:
+  Windows:  C:\Users\<username>\.clipstack\history.db
+  Linux:    /home/<username>/.clipstack/history.db
+  macOS:    /Users/<username>/.clipstack/history.db
+
+Custom location:
+  clipstack --db /path/to/custom.db list
+
+================================================================================
+PLATFORM REQUIREMENTS
+--------------------------------------------------------------------------------
+
+Windows:
+  - Python 3.8+
+  - Works out of the box (uses PowerShell)
+
+Linux:
+  - Python 3.8+
+  - Requires: xclip OR xsel
+  - Install: sudo apt install xclip
+
+macOS:
+  - Python 3.8+
+  - Works out of the box (uses pbcopy/pbpaste)
+
+Optional (all platforms):
+  - pip install pyperclip (enhanced clipboard support)
+
+================================================================================
+TROUBLESHOOTING
+--------------------------------------------------------------------------------
+
+"Clipboard is empty or unavailable":
+  - Make sure something is copied first
+  - Linux: Install xclip (sudo apt install xclip)
+  - Try: pip install pyperclip
+
+"No entries found":
+  - Use clipstack capture to add current clipboard
+  - Use clipstack watch to auto-capture
+
+"Entry position not found":
+  - Check available entries: clipstack list -n 50
+  - Check total count: clipstack stats
+
+"Permission denied":
+  - Check ~/.clipstack/ directory permissions
+  - Use --db to specify alternative location
+
+================================================================================
+KEYBOARD SHORTCUTS (Watch Mode)
+--------------------------------------------------------------------------------
+
+Ctrl+C          Stop watching and exit
+
+================================================================================
+INTEGRATION EXAMPLES
+--------------------------------------------------------------------------------
+
+With SynapseLink:
+  from synapselink import quick_send
+  from clipstack import ClipStack
+  
+  cs = ClipStack()
+  content = cs.get(1)
+  quick_send("TEAM", "Shared Clipboard", content)
+
+PowerShell Functions (add to $PROFILE):
+  function cget { param($n=1) python clipstack.py get $n -q }
+  function clist { python clipstack.py list $args }
+  function csearch { param($term) python clipstack.py search $term }
+
+Bash Aliases (add to ~/.bashrc):
+  alias cget='python /path/to/clipstack.py get'
+  alias clist='python /path/to/clipstack.py list'
+  alias csearch='python /path/to/clipstack.py search'
+
+================================================================================
+RESOURCES
+--------------------------------------------------------------------------------
+
+Documentation:   ClipStack/README.md
+Examples:        ClipStack/EXAMPLES.md
+Integration:     ClipStack/INTEGRATION_PLAN.md
+Quick Start:     ClipStack/QUICK_START_GUIDES.md
+GitHub:          https://github.com/DonkRonk17/ClipStack
+Issues:          https://github.com/DonkRonk17/ClipStack/issues
+
+================================================================================
+CREDITS
+--------------------------------------------------------------------------------
+
+Built by:        ATLAS (Team Brain)
+For:             Logan Smith / Metaphy LLC
+Requested by:    Logan Smith
+Part of:         Beacon HQ / Team Brain Ecosystem
+Date:            January 22, 2026
+
+================================================================================
+                    Never lose a copied snippet again!
+================================================================================

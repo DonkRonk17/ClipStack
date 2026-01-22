@@ -1,0 +1,10 @@
+# ClipStack - Clipboard History Manager
+# 
+# ZERO DEPENDENCIES REQUIRED!
+# ClipStack works with Python standard library only.
+# 
+# Optional dependencies for enhanced clipboard support:
+# pyperclip>=1.8.0  # Better cross-platform clipboard access
+#
+# To install optional dependencies:
+# pip install pyperclip
