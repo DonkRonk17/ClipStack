@@ -1,3 +1,5 @@
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/9303f299-9c56-46d4-946d-e9294597fdc9" />
+
 # 📋 ClipStack - Clipboard History Manager for Power Users
 
 > **Never lose a copied snippet again!** A CLI-first clipboard history manager that stores, searches, and recalls your clipboard entries.
@@ -718,6 +720,9 @@ python -c "from clipstack import ClipboardAccess; ca = ClipboardAccess(); print(
 ```
 
 ---
+
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/1cee41cf-38d8-484a-bfc8-b464e39321bf" />
+
 
 ## 🤝 Contributing
 
